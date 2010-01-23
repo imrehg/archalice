@@ -22,12 +22,15 @@ class testhost(Thread):
             if igot:
                 self.status = int(igot[0])
                 line = pingaling.readline()
+                # Use only the first occurence, that is average response
                 restime = re.search(self.response, line)
                 if  restime:
                     self.responsetime = restime.group(1)
 
 testhost.lifeline = re.compile(r"(\d) received")
-testhost.response = re.compile(r'((\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?) ms')
+# Fit a floating point value, to get average latency from this kind of line:
+# rtt min/avg/max/mdev = 0.883/0.902/0.921/0.019 ms
+testhost.response = re.compile(r'/((\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)/')
 report = ("No response","Partial Response","Alive")
 
 print time.ctime()
