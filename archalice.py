@@ -4,6 +4,7 @@ import os
 import re
 import time
 import sys
+import fileinput
 from threading import Thread
 
 class testhost(Thread):
@@ -36,15 +37,29 @@ report = ("No response","Partial Response","Alive")
 print time.ctime()
 
 pinglist = []
+hostlist = dict({})
 
-for host in range(1,10):
-    ip = "192.168.11."+str(host)
-    current = testhost(ip)
+# Load host list from "mirrorlist"
+mirrorlist = "/etc/pacman.d/mirrorlist"
+for line in fileinput.input(mirrorlist):
+    host = re.search(r'(http|ftp)://(.*?)/', line)
+    if host:
+        hostlist[host.group(2)] = -1
+
+for list in hostlist.iterkeys():
+    current = testhost(list)
     pinglist.append(current)
     current.start()
 
 for pingle in pinglist:
     pingle.join()
-    print "Status from ",pingle.ip,"is",report[pingle.status],"time:",pingle.responsetime
+    if (pingle.status == 2):
+        hostlist[pingle.ip] = pingle.responsetime
+#    print "Status from ",pingle.ip,"is",report[pingle.status],"time:",pingle.responsetime
+
+alist = sorted(hostlist.iteritems(), key=lambda (k,v): (v,k))
+for i in range(0,len(alist)):
+    if (hostlist[alist[i][0]] > 0):
+        print alist[i][0],":",hostlist[alist[i][0]]
 
 print time.ctime()
