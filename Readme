@@ -1,0 +1,8 @@
+archalice
+=========
+
+Testing the ArchLinux mirrors to find which ones are alive and have
+the lowest latencies. Based on the idea of Ubuntu's server choser.
+
+Written in Python - just because.
+
