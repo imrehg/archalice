@@ -15,7 +15,7 @@ class testhost(Thread):
         self.responsetime = -1
 
     def run(self):
-        pingaling = os.popen("ping -q -c2 "+self.ip,"r")
+        pingaling = os.popen("ping -q -c2 "+self.ip+" 2>&1","r")
         while 1:
             line = pingaling.readline()
             if not line: break
